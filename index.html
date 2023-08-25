@@ -22,6 +22,10 @@
         width: 100%;
         justify-content: stretch;
         align-items: stretch;
+        flex: 2;
+      }
+      .column.editor {
+        flex: 1;
       }
       .separator {
         display: flex;
@@ -45,7 +49,8 @@
         border: none;
         cursor: pointer;
       }
-      textarea {
+      textarea,
+      .jsontext {
         width: 100%;
         height: 100%;
         /* resize: none;
@@ -57,11 +62,13 @@
         color: #333; */
       }
     </style>
+    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/css/pretty-print-json.css>
+    <script src=https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/pretty-print-json.min.js></script>
   </head>
   <body>
     <main>
-      <div class="column">
-        <textarea name="" id="" cols="30" rows="10"></textarea>
+      <div class="column editor">
+        <pre id="jsontext" class="json-container" contenteditable="true"></pre>
       </div>
       <div class="separator">
         <button>▶️</button>
@@ -74,7 +81,8 @@
     <script>
       const iframeSrc = "https://playground.wordpress.net/?mode=seamless";
       const iframe = document.querySelector("iframe");
-      const textarea = document.querySelector("textarea");
+      // const textarea = document.querySelector("textarea");
+      const textarea = document.querySelector("#jsontext");
       const button = document.querySelector("button");
 
       window.test = {
@@ -84,10 +92,23 @@
         button,
       };
 
-      function appendBlueprint() {
+      function formatJson(el, jsonObject={}) {
+          el.innerHTML = prettyPrintJson.toHtml(jsonObject, {
+              quoteKeys: true,
+              trailingComma: false,
+            });
+      }
+
+      function appendBlueprint(opts={}) {
+        const {fromButton = false} = opts;
         try {
-          const blueprintString = textarea.value;
-          JSON.parse(blueprintString);
+          // const blueprintString = textarea.value;
+          const blueprintString = textarea.innerText.replace(/\n/g, "");
+          console.log('blueprintString', blueprintString)
+          const blueprintJsonObject = JSON.parse(blueprintString);
+          if(fromButton){
+            formatJson(textarea, blueprintJsonObject);
+          }
           iframe.src = `${iframeSrc}?time=${new Date().getTime()}#${blueprintString}`;
           // iframe.contentWindow.location.reload();
         } catch (error) {
@@ -96,9 +117,10 @@
       }
 
       textarea.addEventListener("input", appendBlueprint);
-      button.addEventListener("click", appendBlueprint);
+      button.addEventListener("click", () => appendBlueprint({fromButton: true}));
 
-      textarea.value = JSON.stringify({
+      // textarea.value = JSON.stringify({
+      formatJson(textarea, {
         landingPage: "/wp-admin/",
         preferredVersions: {
           php: "7.4",
@@ -111,7 +133,12 @@
             password: "password",
           },
         ],
+      }, {
+        quoteKeys: true,
+        trailingComma: false,
       });
+
+      
       appendBlueprint();
     </script>
   </body>
