@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sejas - WordPress Playground Blueprint Builder</title>
+    <style>
+      main {
+        display: flex;
+        flex-direction: row;
+        justify-content: stretch;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+      }
+      .column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        justify-content: stretch;
+        align-items: stretch;
+      }
+      .separator {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        width: 60px;
+      }
+      iframe {
+        border: none;
+        width: 100%;
+        height: 100%;
+      }
+      button {
+        width: 100%;
+        height: 100%;
+        font-size: 24px;
+        font-weight: bold;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      textarea {
+        width: 100%;
+        height: 100%;
+        /* resize: none;
+        border: none;
+        padding: 0;
+        font-size: 16px;
+        font-family: monospace;
+        line-height: 1.5;
+        color: #333; */
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="column">
+        <textarea name="" id="" cols="30" rows="10"></textarea>
+      </div>
+      <div class="separator">
+        <button>▶️</button>
+      </div>
+      <div class="column">
+        <iframe src="https://playground.wordpress.net/?mode=seamless"></iframe>
+      </div>
+    </main>
+
+    <script>
+      const iframeSrc = "https://playground.wordpress.net/?mode=seamless";
+      const iframe = document.querySelector("iframe");
+      const textarea = document.querySelector("textarea");
+      const button = document.querySelector("button");
+
+      window.test = {
+        iframeSrc,
+        iframe,
+        textarea,
+        button,
+      };
+
+      function appendBlueprint() {
+        try {
+          const blueprintString = textarea.value;
+          JSON.parse(blueprintString);
+          iframe.src = `${iframeSrc}?time=${new Date().getTime()}#${blueprintString}`;
+          // iframe.contentWindow.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      textarea.addEventListener("input", appendBlueprint);
+      button.addEventListener("click", appendBlueprint);
+
+      textarea.value = JSON.stringify({
+        landingPage: "/wp-admin/",
+        preferredVersions: {
+          php: "7.4",
+          wp: "5.9",
+        },
+        steps: [
+          {
+            step: "login",
+            username: "admin",
+            password: "password",
+          },
+        ],
+      });
+      appendBlueprint();
+    </script>
+  </body>
+</html>
