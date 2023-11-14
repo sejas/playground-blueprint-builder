@@ -4,77 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sejas - WordPress Playground Blueprint Builder</title>
-    <style>
-      main {
-        display: flex;
-        flex-direction: row;
-        justify-content: stretch;
-        align-items: center;
-        height: 100vh;
-        width: 100vw;
-      }
-      .column {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-        width: 100%;
-        justify-content: stretch;
-        align-items: stretch;
-        flex: 2;
-        max-width: 50%;
-      }
-      .column.editor {
-        flex: 1;
-      }
-      .separator {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-        width: 60px;
-      }
-      iframe {
-        border: none;
-        width: 100%;
-        height: 100%;
-      }
-      button {
-        width: 100%;
-        height: 100%;
-        font-size: 24px;
-        font-weight: bold;
-        background: none;
-        border: none;
-        cursor: pointer;
-      }
-      textarea,
-      .jsontext {
-        width: 100%;
-        height: 100%;
-      }
-      .json-container {
-        word-break: break-all;
-        white-space: break-spaces;
-        padding-left: 30px;
-      }
-      #url-preview {
-        background: #1e2327;
-        white-space: nowrap;
-        padding: 13px;
-        overflow: hidden;
-        border-radius: 20px;
-        margin: 0 8px;
-        max-width: 100%;
-        font-family: arial;
-        text-overflow: ellipsis;
-      }
-      #url-preview a {
-        color: white;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/css/pretty-print-json.css"
@@ -84,6 +14,7 @@
       src="https://www.unpkg.com/really-relaxed-json@0.3.2/src/umd.bundle.js"
       type="text/javascript"
     ></script>
+    <script src="index.js" type="text/javascript"></script>
   </head>
   <body>
     <div id="url-preview">
@@ -102,89 +33,5 @@
         <iframe src="https://playground.wordpress.net/?mode=seamless"></iframe>
       </div>
     </main>
-
-    <script>
-      const parser =
-        really_relaxed_json.tv.twelvetone.rjson.RJsonParserFactory.Companion.getDefault().createParser();
-      const iframeSrc = "https://playground.wordpress.net/?mode=seamless";
-      const iframe = document.querySelector("iframe");
-      const textarea = document.querySelector("#jsontext");
-      const button = document.querySelector("button");
-      const urlPreviewLink = document.querySelector("#url-preview a");
-
-      window.test = {
-        iframeSrc,
-        iframe,
-        textarea,
-        button,
-      };
-
-      function formatJson(el, jsonObject = {}) {
-        el.innerHTML = prettyPrintJson.toHtml(jsonObject, {
-          quoteKeys: true,
-          trailingComma: false,
-        });
-      }
-
-      function appendBlueprint(opts = {}) {
-        const { fromButton = false } = opts;
-        try {
-          let blueprintString = parser.stringToJson(
-            textarea.innerText.replace(/\n/g, "").replace(/\\t/g, "")
-          );
-          const blueprintJsonObject = JSON.parse(blueprintString);
-          blueprintString = JSON.stringify(blueprintJsonObject);
-          console.log("blueprintString", blueprintString);
-
-          if (fromButton) {
-            formatJson(textarea, blueprintJsonObject);
-          }
-
-          iframe.src = `${iframeSrc}?time=${new Date().getTime()}#${blueprintString}`;
-          history.pushState(null, null, `#${blueprintString}`);
-          const playgroundURL = iframe.src.replace(/\?mode=.*\#/, "#");
-          urlPreviewLink.href = playgroundURL;
-          urlPreviewLink.innerText = playgroundURL;
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      textarea.addEventListener("input", appendBlueprint);
-      button.addEventListener("click", () =>
-        appendBlueprint({ fromButton: true })
-      );
-
-      let defaultBlueprint = {
-        landingPage: "/wp-admin/",
-        preferredVersions: {
-          php: "7.4",
-          wp: "5.9",
-        },
-        steps: [
-          {
-            step: "login",
-            username: "admin",
-            password: "password",
-          },
-        ],
-      };
-      if (window.location.hash) {
-        const hash = decodeURI(window.location.hash.replace(/^#/, ""));
-        try {
-          const hashJson = JSON.parse(hash);
-          defaultBlueprint = hashJson;
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      formatJson(textarea, defaultBlueprint, {
-        quoteKeys: true,
-        trailingComma: false,
-      });
-
-      appendBlueprint();
-    </script>
   </body>
 </html>
