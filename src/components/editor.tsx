@@ -13,7 +13,7 @@ const CopyButton = styled(Button)({
   zIndex: 1,
 });
 
-const TextArea = styled.textarea({
+const EditArea = styled.div({
   height: "100%", width: "100%"
 });
 
@@ -26,7 +26,10 @@ export function Editor(props: EditorProps) {
   const { value, onChange } = props;
   return (
     <Root>
-      <TextArea value={value} onChange={e => onChange(e.target.value)} />
+      <EditArea contentEditable='true' dangerouslySetInnerHTML={{ __html: value }} onInput={e => {
+        console.log('yay', e)
+        onChange(e.currentTarget.textContent || '')
+      }} />
       <CopyButton
         onClick={() => alert("Copied!")}
       >

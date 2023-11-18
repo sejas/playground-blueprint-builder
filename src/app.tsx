@@ -1,5 +1,6 @@
 import "./app.css";
 import "@wordpress/components/build-style/style.css";
+import 'pretty-print-json/css/pretty-print-json.dark-mode.min.css'
 import { Header } from "./components/header";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
@@ -13,16 +14,16 @@ const Iframe = styled.iframe({
 });
 
 function App() {
-  const { blueprintText, blueprintJson, setBlueprintText } = useBlueprintJson();
+  const { blueprint, setBlueprintText } = useBlueprintJson();
   return (
     <div className="app">
       <Header />
       <main className="main">
       <Allotment>
-          <Editor value={blueprintText} onChange={setBlueprintText} />
+          <Editor value={blueprint.html} onChange={setBlueprintText} />
           <Iframe 
             title="Playground"
-            src={`https://playground.wordpress.net/?mode=seamless#${JSON.stringify(blueprintJson)}`}
+            src={`https://playground.wordpress.net/?mode=seamless&time=${new Date().getTime()}#${JSON.stringify(blueprint.json)}`}
           />
         </Allotment>
       </main>

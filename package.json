@@ -12,6 +12,8 @@
     "@types/react-dom": "^18.2.15",
     "@wordpress/components": "^25.11.0",
     "allotment": "^1.19.3",
+    "json5": "^2.2.3",
+    "pretty-print-json": "^2.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
